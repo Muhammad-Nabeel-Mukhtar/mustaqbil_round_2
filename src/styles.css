@@ -142,3 +142,7 @@
     color: var(--color-foreground);
   }
 }
+
+@keyframes shimmer {
+  to { background-position: -200% center; }
+}
