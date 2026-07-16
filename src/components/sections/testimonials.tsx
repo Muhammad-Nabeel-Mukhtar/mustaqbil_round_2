@@ -1,81 +1,97 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
-import { ScrollReveal } from "@/components/scroll-reveal";
+import { Star } from "lucide-react";
 
 const TESTIMONIALS = [
-  { quote: "We tried three other tools before Clarity. It is the first one our team actually wanted to keep using.", name: "Sarah Chen", role: "Product Lead, Northwind Studios" },
-  { quote: "Setup took ten minutes and the whole team was already comfortable with it by the end of the day. No onboarding calls needed.", name: "Marcus Reid", role: "Engineering Manager, Fenwick Labs" },
-  { quote: "Our standups got noticeably shorter once everyone could see task status at a glance instead of asking around.", name: "Priya Nair", role: "Founder, Loom & Co." },
+  {
+    quote: "We tried three other tools before Clarity. It is the first one our team actually wanted to keep using.",
+    name: "Sarah Chen",
+    role: "Product Lead",
+    company: "Northwind Studios",
+  },
+  {
+    quote: "Setup took ten minutes and the whole team was already comfortable with it by the end of the day. No onboarding calls needed.",
+    name: "Marcus Reid",
+    role: "Engineering Manager",
+    company: "Fenwick Labs",
+  },
+  {
+    quote: "Our standups got noticeably shorter once everyone could see task status at a glance instead of asking around.",
+    name: "Priya Nair",
+    role: "Founder",
+    company: "Loom & Co.",
+  },
 ];
 
 export function Testimonials() {
-  const [[index, direction], setIndex] = useState<[number, number]>([0, 0]);
-
-  const paginate = (dir: number) => {
-    setIndex(([prev]) => [(prev + dir + TESTIMONIALS.length) % TESTIMONIALS.length, dir]);
-  };
+  const [active, setActive] = useState(0);
 
   return (
-    <section className="border-y border-border bg-muted/30">
-      <ScrollReveal className="mx-auto max-w-3xl px-4 py-20 sm:px-6 lg:px-8">
-        <div className="relative h-[320px] [perspective:1200px] sm:h-[260px]">
-          <AnimatePresence initial={false} custom={direction}>
-            {TESTIMONIALS.map((t, i) => {
-              // Show current + next 2 as a stacked deck peeking behind it
-              const offset = (i - index + TESTIMONIALS.length) % TESTIMONIALS.length;
-              if (offset > 2) return null;
-              return (
-                <motion.div
-                  key={i}
-                  custom={direction}
-                  initial={{ opacity: 0, rotateY: direction > 0 ? 40 : -40, x: direction > 0 ? 60 : -60 }}
-                  animate={{
-                    opacity: offset === 0 ? 1 : 0.35,
-                    scale: 1 - offset * 0.05,
-                    y: offset * 14,
-                    rotateY: 0,
-                    x: 0,
-                    zIndex: TESTIMONIALS.length - offset,
-                  }}
-                  exit={{ opacity: 0, rotateY: direction > 0 ? -40 : 40, x: direction > 0 ? -60 : 60 }}
-                  transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                  className="absolute inset-0 flex flex-col items-center justify-center rounded-2xl border border-border bg-card px-8 py-10 text-center shadow-xl"
-                  style={{ pointerEvents: offset === 0 ? "auto" : "none" }}
-                >
-                  <Quote className="h-7 w-7 text-primary" />
-                  <blockquote className="mt-4 text-xl font-medium leading-relaxed text-foreground sm:text-2xl">
-                    “{t.quote}”
-                  </blockquote>
-                  <div className="mt-6">
-                    <p className="font-semibold text-foreground">{t.name}</p>
-                    <p className="text-sm text-muted-foreground">{t.role}</p>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </AnimatePresence>
+    <section className="mx-auto max-w-6xl px-4 py-28 sm:px-6 lg:px-8">
+      <div className="grid gap-12 lg:grid-cols-[220px_1fr]">
+        {/* Sidebar nav — vertical list of names, not dots */}
+        <div className="flex flex-row gap-2 overflow-x-auto lg:flex-col lg:gap-1 lg:overflow-visible">
+          <p className="mb-2 hidden font-sans text-sm font-semibold uppercase tracking-widest text-primary lg:block">
+            What teams say
+          </p>
+          {TESTIMONIALS.map((t, i) => (
+            <button
+              key={t.name}
+              onClick={() => setActive(i)}
+              className={`shrink-0 whitespace-nowrap rounded-lg px-4 py-3 text-left font-sans text-sm transition-colors lg:whitespace-normal ${
+                active === i
+                  ? "bg-primary/10 font-semibold text-primary"
+                  : "text-muted-foreground hover:bg-accent hover:text-foreground"
+              }`}
+            >
+              {t.name}
+              <span className="hidden lg:block lg:text-xs lg:font-normal lg:opacity-70">{t.company}</span>
+            </button>
+          ))}
         </div>
 
-        <div className="mt-8 flex items-center justify-center gap-4">
-          <button onClick={() => paginate(-1)} aria-label="Previous" className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:bg-accent">
-            <ChevronLeft className="h-4 w-4" />
-          </button>
-          <div className="flex gap-2">
-            {TESTIMONIALS.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setIndex([i, i > index ? 1 : -1])}
-                aria-label={`Go to testimonial ${i + 1}`}
-                className={`h-2 rounded-full transition-all ${i === index ? "w-6 bg-primary" : "w-2 bg-border hover:bg-muted-foreground"}`}
-              />
-            ))}
-          </div>
-          <button onClick={() => paginate(1)} aria-label="Next" className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:bg-accent">
-            <ChevronRight className="h-4 w-4" />
-          </button>
+        {/* Large pull-quote */}
+        <div className="relative min-h-[280px]">
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -left-4 -top-8 select-none font-display text-[10rem] italic leading-none text-primary/10 sm:text-[14rem]"
+          >
+            “
+          </span>
+
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={active}
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -16 }}
+              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              className="relative pt-6"
+            >
+              <blockquote className="font-display text-3xl italic leading-tight text-foreground sm:text-4xl lg:text-[2.75rem]">
+                {TESTIMONIALS[active].quote}
+              </blockquote>
+
+              <div className="mt-8 flex items-center gap-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-secondary font-sans text-sm font-semibold text-secondary-foreground">
+                  {TESTIMONIALS[active].name.split(" ").map((n) => n[0]).join("")}
+                </div>
+                <div>
+                  <p className="font-sans font-semibold text-foreground">{TESTIMONIALS[active].name}</p>
+                  <p className="font-sans text-sm text-muted-foreground">
+                    {TESTIMONIALS[active].role}, {TESTIMONIALS[active].company}
+                  </p>
+                </div>
+                <div className="ml-auto flex gap-0.5 text-primary">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star key={i} className="h-3.5 w-3.5 fill-current" />
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          </AnimatePresence>
         </div>
-      </ScrollReveal>
+      </div>
     </section>
   );
 }
